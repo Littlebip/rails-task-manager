@@ -1,15 +1,11 @@
 class TasksController < ApplicationController
+  before_action :set_task, only: [:show, :edit, :update, :destroy]
+
   def index
     @tasks = Task.all
   end
 
-  def show
-    @task = Task.find(params[:id])
-    @task_completion = 'This task is not completed yet'
-    if @task.completed
-      @task_completion = 'This task is completed'
-    end
-  end
+  def show() end
 
   def new
     @task = Task.new
@@ -18,26 +14,22 @@ class TasksController < ApplicationController
   def create
     task = Task.new(task_params)
     task.save
-    redirect_to task_path(task)
+    redirect_to task_path(@task)
   end
 
-  def edit
-    @task = Task.find(params[:id])
-  end
+  def edit() end
 
   def update
-    task = Task.find(params[:id])
-    # if params[:task][:completed] == "1"
-    #   task.completed = true
-    # else
-    #   task.completed = false
-    # end
-    task.update(task_params)
-    redirect_to task_path(task)
+    if params[:task][:completed] == "1"
+      @task.completed = true
+    else
+      @task.completed = false
+    end
+    @task.update(task_params)
+    redirect_to task_path(@task)
   end
 
   def destroy
-    @task = Task.find(params[:id])
     @task.destroy
     redirect_to tasks_path, status: :see_other
   end
@@ -46,5 +38,9 @@ class TasksController < ApplicationController
 
   def task_params
     params.require(:task).permit(:title, :details, :completed)
+  end
+
+  def set_task
+    @task = Task.find(params[:id])
   end
 end
